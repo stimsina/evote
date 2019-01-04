@@ -8,7 +8,7 @@
                 <label for="lastName">Last Name * :</label>
                 <input type="text" name="lastName" id="lastName" v-model="userObj.lastName">
                 <label for="email">Email Address * : </label>
-                <input type="email" name="email" id="email" v-model="userObj.email">
+                <input type="email" name="email" id="email" v-model="userObj.userName">
                 <p class="red-text center" v-if="errorMessage">{{errorMessage}}</p>
                 <div class="field center">
                     <button class="btn">Join</button>
@@ -21,6 +21,7 @@
 <script>
 import database from '@/firebase/init'
 import firebase from 'firebase'
+import axios from '@/axios/init'
 export default {
     name:'Signup',
     data(){
@@ -28,7 +29,7 @@ export default {
             userObj:{
                 firstName:null,
                 lastName:null,
-                email:null,
+                userName:null,
                 password:null
             },
             errorMessage:null
@@ -37,19 +38,23 @@ export default {
     },
     methods:{
         createNewUser(){
-            if(this.userObj.firstName&&this.userObj.lastName&&this.userObj.email){
-                let ref=database.collection('users').doc(this.userObj.email)
+            if(this.userObj.firstName&&this.userObj.lastName&&this.userObj.userName){
+                let ref=database.collection('users').doc(this.userObj.userName)
                 ref.get().then(doc=>{
                 if(!doc.exists){
-                    firebase.auth().createUserWithEmailAndPassword(this.userObj.email,this.userObj.password).then(cred=>{
+                    firebase.auth().createUserWithEmailAndPassword(this.userObj.userName,this.userObj.password).then(cred=>{
                         ref.set({
                             firstName:this.userObj.firstName,
                             lastName:this.userObj.lastName,
                             userID:cred.user.uid,
-                            email:this.userObj.email,
+                            email:this.userObj.userName,
                             password:this.userObj.password
                         }).then(()=>{
-                            this.$router.push({name:'Home'})
+                            axios.post("/users",this.userObj).then(response=>{
+                                console.log(response)
+                                this.$router.push({name:'Home'})
+                            })
+                            
                         })
                         .catch(err=>{
                             this.errorMessage=err
