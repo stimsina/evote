@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import axios from '@/axios/init'
 export default {
     name:'AddParticipant',
     data(){
@@ -31,16 +32,28 @@ export default {
                 firstName:null,
                 lastName:null,
                 age:null,
-                description:null
+                description:null,
+                profileIcon:null
+                
             },
             errorMessage:null
         }
     },
     methods:{
-        readUploadedFile(){
+        readUploadedFile(uploadEvent){
+            let fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(uploadEvent.target.files[0]);
+            fileReader.onload =()=> {
+                this.participantObj.profileIcon=fileReader.result
+              }
+    
         },
         addParticipant(){
-
+            axios.post('/participants',this.participantObj).then(response=>{
+                this.$router.push({name:'Home'})
+            }).catch(err=>{
+                console.log(err)
+            })
         }
     }
 

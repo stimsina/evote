@@ -2,7 +2,7 @@
     <div class="navbar">
         <nav class="blue darken-2">
             <div class="container">
-                <router-link :to="{name:'Home'}" exact>Dashboard</router-link>
+                <router-link :to="{name:'Home'}" exact v-if="currentUser">Dashboard</router-link>
                 <ul class="right">
                     <li><router-link :to="{name:'Signup'}" exact v-if="!currentUser">Join Now</router-link></li>
                     <li><router-link :to="{name:'Login'}" exact v-if="!currentUser">Log In</router-link></li>
