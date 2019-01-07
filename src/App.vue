@@ -3,7 +3,9 @@
 
     <Navbar/>
     <img src="@/assets/logo.png" class="app-logo">
-    <router-view/>
+    <keep-alive include="Signup">
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
