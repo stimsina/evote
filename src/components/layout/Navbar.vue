@@ -33,6 +33,7 @@ export default {
     created(){
         firebase.auth().onAuthStateChanged(user=>{
             this.currentUser=user
+            this.$store.commit('SET_USER',user)
         })
     },
     computed:{
