@@ -38,6 +38,7 @@ export default {
           currentUser:currentUser,
         }
       }).then(response=>{
+        this.participantsList=response.data
         this.fetchVoteCoutnForUser()
       })
     },
@@ -51,6 +52,8 @@ export default {
     fetchVoteCoutnForUser(){
       axios.get('/users/vote').then(response=>{
         this.remainingVotes=response.data
+      }).catch(err=>{
+        console.log("error while getting remaining votes ")
       })
     }
   },
