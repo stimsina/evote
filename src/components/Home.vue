@@ -59,6 +59,7 @@ export default {
   },
   mounted(){
     this.fetchParticipants()
+    this.currentUser=this.$store.getteres.GET_USER
   },
   watch:{
 
