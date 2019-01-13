@@ -1,14 +1,17 @@
 <template>
 <div>
+  <h4 class="center"><u class="blue-text">Participants List</u> </h4>
   <i class="material-icons green darken-2  newParticipant" @click.prevent="goToAddParticipants">add</i>
   <i v-if="remainingVotes>=0" class="right yellow darken-2 remainingText">{{remainingVotes}} <span class="white"> votes remaining</span></i>
+  <i class="red-text right" v-if="feedbackMessage">{{feedbackMessage}}</i>
   <div class="home container">
-    <div class="home card participant container " v-for="(participant,index) in participantsList" :key='index'>
+    <div class="card" v-for="(participant,index) in participantsList" :key='index'>
       <div class="card-content">
-        <span style="width:25px;">{{participant.firstName}}  {{participant.lastName}}</span>
-        {{participant.age}}
-        <textarea v-model="participant.description" disabled></textarea>
-        <button class="btn" @click.prevent="castVote(participantToVote)" v-if="remainingVotes>0">Vote</button> 
+       <span>{{participant.firstName + " "+participant.lastName}}</span><br>
+       <span>{{participant.age}}</span><br>
+       <span>{{participant.description}}</span><br>
+       <hr>
+        <button class="btn" @click.prevent="castVote(participant)" v-if="remainingVotes>0">Vote</button> 
       </div>
     </div>
   </div>
@@ -23,23 +26,22 @@ export default {
     return {
       participantsList:null,
       currentUser:null,
-      remainingVotes:5
+      remainingVotes:10,
+      feedbackMessage:null
     }
   },
   methods:{
     goToAddParticipants(){
       this.$router.push({name:'AddParticipant'})
     },
-    castVote(){
+    castVote(participantToVote){
       this.remainingVotes-=1
-      axios.post('/participants',{
-        params:{
-          participantToVote:participantToVote,
-          currentUser:currentUser,
-        }
+      this.feedbackMessage=`1 upvote for ${participantToVote.firstName} ${participantToVote.lastName} .`
+      axios.post('/votes',{
+          participant:participantToVote,
+          voteFRom:this.currentUser.email,
       }).then(response=>{
-        this.participantsList=response.data
-        this.fetchVoteCoutnForUser()
+        this.feedbackMessage=null
       })
     },
     fetchParticipants(){
@@ -50,7 +52,11 @@ export default {
     })
     },
     fetchVoteCoutnForUser(){
-      axios.get('/users/vote').then(response=>{
+      axios.get('/users/vote',{
+        params:{
+          currentUser:this.currentUser
+        }
+      }).then(response=>{
         this.remainingVotes=response.data
       }).catch(err=>{
         console.log("error while getting remaining votes ")
@@ -58,11 +64,12 @@ export default {
     }
   },
   created(){
+        this.currentUser=this.$store.getters.GET_USER
+        fetchVoteCoutnForUser()
 
   },
   mounted(){
     this.fetchParticipants()
-    this.currentUser=this.$store.getteres.GET_USER
   },
   watch:{
 
